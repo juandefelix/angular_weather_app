@@ -4,7 +4,7 @@
     <title>SkyCast</title>
     <!-- load angular -->
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.11/angular.min.js"></script>
-    
+
     <!-- load google api with api key -->
     <!-- <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDvX7wiooGujYaBMv6ImB9cSfF5z-ukdMQ"></script> -->
 
@@ -14,20 +14,16 @@
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
     <!-- local files -->
     <script src="skycastapp.js"></script>
-    <script src="chart.js"></script>
+    <script type='text/javascript' src='angular-charts-0.2.6/dist/angular-charts.min.js'></script>
+    <!-- <script src="chart.js"></script> -->
     </head>
 
-  <body ng-app="myApp" >
+  <body ng-controller="weatherCtrl">
     <h1>SkyCast</h1>
-    <div ng-controller="weatherCtrl">
-      <form ng-submit="getLocation()">
-        <input type="text" ng-model="address" value="Madrid" />
-        <input type="submit" value="Add"></input>
-      </form>
-      <div style="padding:10px">
-        {{hello}}
-        Coors: {{coors.lat}} : {{coors.lng}}
-      </div>
-    </div>
+    <form ng-submit="getLocation()">
+      <input type="text" ng-model="address" value="Madrid" />
+      <input type="submit" value="Add"></input>
+    </form>
+    <div google-chart="PieChart" ng-model="data"></div>
   </body>
   </html>
