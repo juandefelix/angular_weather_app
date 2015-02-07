@@ -22,34 +22,29 @@ app.controller('weatherCtrl', ['$scope', '$http', function($scope, $http){
       var lat = result[0].geometry.location.lat();
       var lng = result[0].geometry.location.lng();
       var queryString = 'https://api.forecast.io/forecast/ad95313ec184d7114f912029b416fb5b/' + lat + ',' + lng + "?callback=JSON_CALLBACK";
-      // console.log(queryString)
-      
+        
       $http.jsonp(queryString).
         success(function(results) {
 
-              console.log('on jsonp')
-          google.setOnLoadCallback(function(results){
-              $scope.data = {};
-              $scope.data.dataTable = new google.visualization.DataTable();
-              $scope.data.dataTable.addColumn('string', 'Summary');
-              $scope.data.dataTable.addColumn('number', 'Temperature');
-              $scope.data.dataTable.addColumn('number', 'Probability of precipitation');
-              // data.addRows([
-              //   results.currently.summary,
-              //   results.currently.temperature,
-              //   results.currentlu.precipitProbability
-              // ]);
+          $scope.data = {};
+          $scope.data.dataTable = new google.visualization.DataTable();
+          $scope.data.dataTable.addColumn('string', 'Summary');
+          $scope.data.dataTable.addColumn('number', 'Temperature');
+          $scope.data.dataTable.addColumn('number', 'Probability of precipitation');
+          // data.addRows([
+          //   results.currently.summary,
+          //   results.currently.temperature,
+          //   results.currentlu.precipitProbability
+          // ]);
 
           $scope.data.dataTable.addRows([
-              ['Mushrooms', 3],
-              ['Onions', 1],
-              ['Olives', 1],
-              ['Eggplant', 1],
-              ['Pepperoni', 2]
-            ]);
-          });
-        
-
+            ['Mushrooms', 3, 1],
+            ['Onions', 1, 1],
+            ['Olives', 1, 1],
+            ['Eggplant', 1, 1],
+            ['Pepperoni', 2, 1]
+          ]);
+              console.log($scope.data.dataTable)
         }). // success
         error(function(data) {
           alert('error')
@@ -68,8 +63,8 @@ googleChart.directive("googleChart",function(){
     return{
         restrict : "A",
         link: function($scope, $elem, $attr){
-            var dt = $scope.dataTable;
-          console.log(dt)
+          console.log("D T:", dt)
+          var dt = $scope[$elem.ngModel].dataTable;
 
             var options = {'title':'Current Weather',
                              'width':400,
