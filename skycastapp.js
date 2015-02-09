@@ -8,15 +8,17 @@ var app = angular.module('myApp',['google-chart']);
 
 app.controller('weatherCtrl', ['$scope', '$http', function($scope, $http){
     $scope.address = "Madrid";
+    $scope.data = {}
 
     $scope.getLocation = function(){
-        var geocoder = new google.maps.Geocoder();
-        geocoder.geocode( {'address': $scope.address }, function(result, status) {
-            var lat = result[0].geometry.location.lat();
-            var lng = result[0].geometry.location.lng();
-            var queryString = 'https://api.forecast.io/forecast/ad95313ec184d7114f912029b416fb5b/' + lat + ',' + lng + "?callback=JSON_CALLBACK";
-            getWeatherReport(queryString);
-        })
+        // var geocoder = new google.maps.Geocoder();
+        // geocoder.geocode( {'address': $scope.address }, function(result, status) {
+        //     var lat = result[0].geometry.location.lat();
+        //     var lng = result[0].geometry.location.lng();
+        //     var queryString = 'https://api.forecast.io/forecast/ad95313ec184d7114f912029b416fb5b/' + lat + ',' + lng + "?callback=JSON_CALLBACK";
+        //     getWeatherReport(queryString);
+        // })
+        populateTable("hi");
     }
 
     function getWeatherReport(query){
@@ -27,8 +29,8 @@ app.controller('weatherCtrl', ['$scope', '$http', function($scope, $http){
         })
     }
 
-    function populateTable (results) {
-        $scope.data = {};
+    function populateTable(results) {
+        // $scope.data = {};
         $scope.data.dataTable = new google.visualization.DataTable();
         $scope.data.dataTable.addColumn('string', 'Summary');
         $scope.data.dataTable.addColumn('number', 'Temperature');
@@ -56,19 +58,46 @@ app.controller('weatherCtrl', ['$scope', '$http', function($scope, $http){
 
 var googleChart = googleChart || angular.module("google-chart",[]);
 
-googleChart.directive("googleChart",function(){  
-    return{
+googleChart.directive("googleChart",function(){      
+    return {
         restrict : "A",
-        link: function($scope, $elem, $attr){
+        transclude: true,
+        link: function(scope, elem, attrs) {
+            scope.$watch('data', function(newValue, oldValue) { 
+                if (scope.data) {       
+                    scope.data.dataTable = newValue;
 
-            console.log('DATA', $scope[$elem.ngModel])
-            var dt = $scope[$elem.ngModel].dataTable;
-            var options = {'title':'Current Weather',
-                            'width':400,
-                            'height':300};
+                    var dt = scope[elem.ngModel].dataTable;
+                    var options = {'title':'Current Weather',
+                                    'width':400,
+                                    'height':300};
 
-            var googleChart = new google.visualization[$attr.googleChart]($elem[0]);
-            googleChart.draw(dt,options);
+                    var googleChart = new google.visualization[attr.googleChart](elem[0]);
+                    googleChart.draw(dt,options);
+                }
+            });
         }
     }
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
