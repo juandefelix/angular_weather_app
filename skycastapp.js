@@ -38,11 +38,11 @@ app.controller('weatherCtrl', ['$scope', '$http', function($scope, $http){
         $scope.data.dataTable.addColumn('string', 'Summary');
         $scope.data.dataTable.addColumn('number', 'Temperature');
         $scope.data.dataTable.addColumn('number', 'Probability of precipitation');
-        $scope.data.dataTable.addRows([
+        $scope.data.dataTable.addRows([[
           results.currently.summary,
           results.currently.temperature,
           results.currently.precipProbability
-        ]);
+        ]]);
 
         $scope.isReady = true;
     }
