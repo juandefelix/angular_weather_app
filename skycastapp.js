@@ -10,6 +10,7 @@ app.controller('weatherCtrl', ['$scope', '$http', function($scope, $http){
     $scope.address = "Madrid";
     $scope.data = {}
     $scope.data.dataTable = new google.visualization.DataTable();
+    $scope.isReady = false;
 
     console.log('Controller Scope: ',$scope.data.dataTable);
 
@@ -54,8 +55,10 @@ app.controller('weatherCtrl', ['$scope', '$http', function($scope, $http){
             ['Eggplant', 1, 1],
             ['Pepperoni', 2, 1]
         ]);
-    }
 
+        $scope.isReady = true;
+        console.log('FINAL: ', $scope.data.dataTable)
+    }
 }]) // controller
 
 
@@ -67,22 +70,26 @@ var googleChart = googleChart || angular.module("google-chart",[]);
 googleChart.directive("googleChart",function(){      
     return {
         restrict : "A",
+        // replace: true,
         link: function(scope, elem, attr) {
             console.log('Directive Scope: ', scope.data)
-            // scope.$watch('data', function(newValue, oldValue) { 
-                // console.log(newValur)
-                // if (scope.data) {       
-                    // scope.data.dataTable = newValue;
-
+            scope.$watch('isReady', function(newValue, oldValue) { 
+                if (newValue) {    
+                console.log("NEW")  
                     var dt = scope.data.dataTable;
-                    var options = {'title':'Current Weather',
+                    var options = { 'title':'Current Weather',
                                     'width':400,
-                                    'height':300};
+                                    'height':300 };
 
                     var googleChart = new google.visualization[attr.googleChart](elem[0]);
                     googleChart.draw(dt,options);
-                // }
-            // });
+                    $(elem).show();
+                }
+                else { 
+                    $(elem).hide(); 
+                    console.log("OLD")
+                }
+            });
         }
     }
 });
