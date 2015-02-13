@@ -8,14 +8,13 @@ var app = angular.module('myApp',['google-chart']);
 
 app.controller('weatherCtrl', ['$scope', '$http', function($scope, $http){
     $scope.address = "Madrid";
-    $scope.data = {}
-    $scope.data.dataTable = new google.visualization.DataTable();
     $scope.isReady = false;
 
     $scope.getLocation = function(){
+    $scope.data = {}
+    $scope.data.dataTable = new google.visualization.DataTable();
         var geocoder = new google.maps.Geocoder();
         geocoder.geocode( {'address': $scope.address }, function(result, status) {
-            console.log("GEOCODER!")
             var lat = result[0].geometry.location.lat();
             var lng = result[0].geometry.location.lng();
             var queryString = 'https://api.forecast.io/forecast/ad95313ec184d7114f912029b416fb5b/' + lat + ',' + lng + "?callback=JSON_CALLBACK";
@@ -34,7 +33,6 @@ app.controller('weatherCtrl', ['$scope', '$http', function($scope, $http){
     }
 
     function populateTable(results) {
-        console.log(results);
         $scope.data.dataTable.addColumn('string', 'Summary');
         $scope.data.dataTable.addColumn('number', 'Temperature');
         $scope.data.dataTable.addColumn('number', 'Probability of precipitation');
@@ -62,8 +60,9 @@ googleChart.directive("googleChart",function(){
                 if (newValue) {    
                     var dt = scope.data.dataTable;
                     var options = { 'title':'Current Weather',
-                                    'width':400,
-                                    'height':300 };
+                                    'width':600,
+                                    'height':300 
+                                };
 
                     var googleChart = new google.visualization[attr.googleChart](elem[0]);
                     googleChart.draw(dt,options);
