@@ -6,12 +6,14 @@ google.load('visualization', '1.1', {packages:['table', 'bar']});
 
 var app = angular.module('myApp',['google-chart']);
 
-app.controller('weatherCtrl', ['$scope', '$http', function($scope, $http){
+app.controller('weatherCtrl', ['$scope', '$http', 'storeLocations', function($scope, $http, storeLocations){
     $scope.isReady = false;
+    $scope.locationsList = storeLocations.list;
 
     $scope.getLocation = function(){
         $scope.isReady = false;
         $scope.location = $scope.address;
+        storeLocations.addLocation($scope.address);
 
         var geocoder = new google.maps.Geocoder();
         geocoder.geocode( {'address': $scope.address }, function(result, status) {
@@ -26,7 +28,7 @@ app.controller('weatherCtrl', ['$scope', '$http', function($scope, $http){
         $http.jsonp(query).
             success(function(data){
                 populateTable(data)
-            }). // success
+            }).
             error(function(data) {
                 alert('error');
         })
@@ -85,10 +87,19 @@ app.controller('weatherCtrl', ['$scope', '$http', function($scope, $http){
         $scope.daily.height = 300
         $scope.daily.dataTable = google.visualization.arrayToDataTable(log);        
     }
-}]) // controller
-
-
-// ==============================================================
+}]).
+factory('storeLocations', function() {
+  var list = [];
+  function addLocation(value){
+    if (value !== ""){
+        list.push(value);
+    }
+  };
+  return { 
+    addLocation: addLocation, 
+    list: list
+  };
+}); 
 
 
 var googleChart = googleChart || angular.module("google-chart",[]);
@@ -120,12 +131,3 @@ googleChart.directive("googleChart",function(){
         }
     }
 });
-
-// var myModule = angular.module('location-list', []);
-// myModule.factory('serviceId', function() {
-//   var locationList = {};
-//   function addLocation(value){
-//     locationList.push(value);
-//   };
-//   // return shinyNewServiceInstance;
-// });
