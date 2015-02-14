@@ -1,7 +1,7 @@
 google.setOnLoadCallback(function(){  
     angular.bootstrap(document.body, ['myApp']);
 });
-google.load('visualization', '1.0', {'packages':['corechart']});
+google.load('visualization', '1.1', {packages:['corechart', 'bar']});
 
 
 var app = angular.module('myApp',['google-chart']);
@@ -11,8 +11,8 @@ app.controller('weatherCtrl', ['$scope', '$http', function($scope, $http){
     $scope.isReady = false;
 
     $scope.getLocation = function(){
-    $scope.data = {}
-    $scope.data.dataTable = new google.visualization.DataTable();
+    $scope.currently = {}
+    $scope.currently.dataTable = new google.visualization.DataTable();
         var geocoder = new google.maps.Geocoder();
         geocoder.geocode( {'address': $scope.address }, function(result, status) {
             var lat = result[0].geometry.location.lat();
@@ -33,16 +33,21 @@ app.controller('weatherCtrl', ['$scope', '$http', function($scope, $http){
     }
 
     function populateTable(results) {
-        $scope.data.dataTable.addColumn('string', 'Summary');
-        $scope.data.dataTable.addColumn('number', 'Temperature');
-        $scope.data.dataTable.addColumn('number', 'Probability of precipitation');
-        $scope.data.dataTable.addRows([[
-          results.currently.summary,
-          results.currently.temperature,
-          results.currently.precipProbability
-        ]]);
-
+        setCurrently(results.currently);
+        // setHourly(results.hourly);
+        // setDaily(results.daily);
         $scope.isReady = true;
+    }
+
+    function setCurrently(results) {
+        $scope.currently.dataTable.addColumn('string', 'Summary');
+        $scope.currently.dataTable.addColumn('number', 'Temperature');
+        $scope.currently.dataTable.addColumn('number', 'Probability of precipitation');
+        $scope.currently.dataTable.addRows([[
+          results.summary,
+          results.temperature,
+          results.precipProbability
+        ]]);
     }
 }]) // controller
 
@@ -58,13 +63,16 @@ googleChart.directive("googleChart",function(){
         link: function(scope, elem, attr) {
             scope.$watch('isReady', function(newValue, oldValue) { 
                 if (newValue) {    
-                    var dt = scope.data.dataTable;
+                    var dt = scope.currently.dataTable;
                     var options = { 'title':'Current Weather',
                                     'width':600,
                                     'height':300 
                                 };
-
-                    var googleChart = new google.visualization[attr.googleChart](elem[0]);
+                    if(attr.googleChart == 'PieChart') {
+                        var googleChart = new google.visualization[attr.googleChart](elem[0]);
+                    } else {
+                        var googleChart = new google.charts[attr.googleChart](elem[0]);
+                    }
                     googleChart.draw(dt,options);
                     $(elem).show();
                 }
