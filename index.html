@@ -2,28 +2,50 @@
   <html>
     <head>
     <title>SkyCast</title>
-    <!-- load angular -->
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.11/angular.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-
-    <!-- load the api for charts -->
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-    <!-- load google maps -->
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
-    <!-- local files -->
     <script src="skycastapp.js"></script>
-    <!-- <script type='text/javascript' src='angular-charts-0.2.6/dist/angular-charts.min.js'></script> -->
-    <!-- <script src="chart.js"></script> -->
+    <link rel="stylesheet" type="text/css" href="mystyle.css">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <!-- Optional theme -->
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css"> -->
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
     </head>
 
-  <body ng-controller="weatherCtrl">
-    <h1>SkyCast</h1>
-    <form ng-submit="getLocation()">
-      <input type="text" ng-model="address" value="Madrid" />
-      <input type="submit" value="Add"></input>
-    </form>
-    <div google-chart="PieChart" ng-model="current"></div>
-    <!-- <div google-chart="Bar" ng-model="hourly"></div> -->
-    <!-- <div google-chart="Bar" ng-model="daily"></div> -->
+  <body ng-controller="weatherCtrl" class="container">
+    <div class='row'>
+      <h1>SkyCast App</h1>
+      <div id="form" class="col-md-4 col-md-offset-4">
+        <form ng-submit="getLocation()">
+          <div class="form-group">
+            <label>Enter Location</label>
+            <input type="text" ng-model="address" value="Madrid" class="form-control">
+          </div>
+          <div class="form-group">
+            <input type="submit" value="Add" class="btn btn-default"></input>
+          </div>
+        </form>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-md-6 col-md-offset-3">    
+        <h2 ng-show='isReady'>{{location}} Current Weather</h2>
+        <div id='current' google-chart="Table" ng-model="current"></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 col-md-offset-3">
+        <h2 ng-show='isReady'>{{location}} Hourly Hystory</h2>
+        <div id="hourly" google-chart="Bar" ng-model="hourly"></div>
+        <h2 ng-show='isReady'>{{location}} Daily Hystory</h2>
+        <div id="daily" google-chart="Bar" ng-model="daily"></div>
+      </div>
+    </div>
   </body>
   </html>

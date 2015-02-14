@@ -1,18 +1,18 @@
 google.setOnLoadCallback(function(){  
     angular.bootstrap(document.body, ['myApp']);
 });
-google.load('visualization', '1.1', {packages:['corechart', 'bar']});
+google.load('visualization', '1.1', {packages:['table', 'bar']});
 
 
 var app = angular.module('myApp',['google-chart']);
 
 app.controller('weatherCtrl', ['$scope', '$http', function($scope, $http){
-    $scope.address = "Madrid";
     $scope.isReady = false;
 
     $scope.getLocation = function(){
-    $scope.currently = {}
-    $scope.currently.dataTable = new google.visualization.DataTable();
+        $scope.isReady = false;
+        $scope.location = $scope.address;
+
         var geocoder = new google.maps.Geocoder();
         geocoder.geocode( {'address': $scope.address }, function(result, status) {
             var lat = result[0].geometry.location.lat();
@@ -34,20 +34,56 @@ app.controller('weatherCtrl', ['$scope', '$http', function($scope, $http){
 
     function populateTable(results) {
         setCurrently(results.currently);
-        // setHourly(results.hourly);
-        // setDaily(results.daily);
+        setHourly(results.hourly);
+        setDaily(results.daily);
         $scope.isReady = true;
     }
 
     function setCurrently(results) {
-        $scope.currently.dataTable.addColumn('string', 'Summary');
-        $scope.currently.dataTable.addColumn('number', 'Temperature');
-        $scope.currently.dataTable.addColumn('number', 'Probability of precipitation');
-        $scope.currently.dataTable.addRows([[
+        $scope.current = {}
+        $scope.current.tableTitle = 'Current Weather';
+        $scope.current.width = 600
+        $scope.current.height = 100
+        $scope.current.dataTable = new google.visualization.DataTable();
+        $scope.current.dataTable.addColumn('string', 'Summary');
+        $scope.current.dataTable.addColumn('number', 'Temperature');
+        $scope.current.dataTable.addColumn('number', 'Probability of precipitation');
+        $scope.current.dataTable.addRows([[
           results.summary,
           results.temperature,
           results.precipProbability
         ]]);
+    }
+
+    function setHourly(results){
+        var data = results.data.slice(0, 9);
+        var log = [['Hour','Temperature', 'Visibility', 'WindSpeed']];
+        angular.forEach(data, function(elem) {
+            var hour = data.indexOf(elem) + 1;
+            this.push([hour + " h.", elem.temperature, elem.visibility, elem.windSpeed]);
+        }, log);
+
+        $scope.hourly  = {};
+        $scope.hourly.tableTitle = 'Hourly Weather';
+        $scope.hourly.width = 600
+        $scope.hourly.height = 300
+        $scope.hourly.dataTable = google.visualization.arrayToDataTable(log);        
+    }
+
+    function setDaily(results){
+        console.log(results);
+        var data = results.data.slice(0, 8);
+        var log = [['Day','Max Temperature', 'Min Temperature', 'Visibility', 'WindSpeed']];
+        angular.forEach(data, function(elem) {
+            var hour = data.indexOf(elem) + 1;
+            this.push([hour + " d.", elem.temperatureMax, elem.temperatureMin, elem.visibility, elem.windSpeed]);
+        }, log);
+
+        $scope.daily  = {};
+        $scope.daily.tableTitle = 'Daily Weather';
+        $scope.daily.width = 600
+        $scope.daily.height = 300
+        $scope.daily.dataTable = google.visualization.arrayToDataTable(log);        
     }
 }]) // controller
 
@@ -63,12 +99,13 @@ googleChart.directive("googleChart",function(){
         link: function(scope, elem, attr) {
             scope.$watch('isReady', function(newValue, oldValue) { 
                 if (newValue) {    
-                    var dt = scope.currently.dataTable;
-                    var options = { 'title':'Current Weather',
-                                    'width':600,
-                                    'height':300 
+                    var dt = scope[attr.ngModel].dataTable;
+
+                    var options = { 'title':scope[attr.ngModel].tableTitle,
+                                    'width':scope[attr.ngModel].width,
+                                    'height':scope[attr.ngModel].height 
                                 };
-                    if(attr.googleChart == 'PieChart') {
+                    if (attr.googleChart == 'Table') {
                         var googleChart = new google.visualization[attr.googleChart](elem[0]);
                     } else {
                         var googleChart = new google.charts[attr.googleChart](elem[0]);
@@ -83,3 +120,12 @@ googleChart.directive("googleChart",function(){
         }
     }
 });
+
+// var myModule = angular.module('location-list', []);
+// myModule.factory('serviceId', function() {
+//   var locationList = {};
+//   function addLocation(value){
+//     locationList.push(value);
+//   };
+//   // return shinyNewServiceInstance;
+// });
